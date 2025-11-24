@@ -12,20 +12,32 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonElevation
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
@@ -54,6 +66,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -78,9 +92,9 @@ class MainActivity : ComponentActivity(), NetworkStateListener by NetworkStateHa
         setContent {
             MasterJetpackComposeTheme {
                 Scaffold(
-                    topBar = {
-                        MyTopAppBar()
-                    },
+//                    topBar = {
+//                        MyTopAppBar()
+//                    },
                     bottomBar = {
                         MyBottomAppBar()
                     },
@@ -88,7 +102,7 @@ class MainActivity : ComponentActivity(), NetworkStateListener by NetworkStateHa
                         MyFAB()
                     }
                 ) {
-                    MyColumn()
+                    MyCard()
                 }
 
 
@@ -221,6 +235,140 @@ fun MyFAB() {
     ) {
         Icon(painter = painterResource(R.drawable.outline_add_24),
             contentDescription = "Add")
+    }
+}
+
+//Scroll Column
+@Composable
+fun ScrollingColumn() {
+    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+        Image(painter = painterResource(R.drawable.pic1,)
+            , contentDescription = "pic1",
+            contentScale = ContentScale.FillBounds)
+
+        Image(painter = painterResource(R.drawable.pic2,)
+            , contentDescription = "pic2",
+            contentScale = ContentScale.FillBounds)
+
+        Image(painter = painterResource(R.drawable.pic3,)
+            , contentDescription = "pic3",
+            contentScale = ContentScale.FillBounds)
+    }
+}
+
+//Scroll Row
+@Composable
+fun ScrollingRow() {
+    Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
+        Image(painter = painterResource(R.drawable.pic1,)
+            , contentDescription = "pic1",
+            contentScale = ContentScale.FillBounds)
+
+        Image(painter = painterResource(R.drawable.pic2,)
+            , contentDescription = "pic2",
+            contentScale = ContentScale.FillBounds)
+
+        Image(painter = painterResource(R.drawable.pic3,)
+            , contentDescription = "pic3",
+            contentScale = ContentScale.FillBounds)
+    }
+}
+
+//Lazy Scrolling
+@Composable
+fun MyLazyColumn() {
+    val itemList = listOf<String>(
+        "Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6",
+        "Item 7","Item 8", "Item 9", "Item 10","Item 11", "Item 12", "Item 13",
+        "Item 14", "Item 15", "Item 16", "Item 17","Item 18", "Item 19", "Item 20"
+    )
+    LazyColumn(
+        contentPadding = PaddingValues(vertical = 120.dp)
+    ) {
+        stickyHeader {
+            Text("Sticky Header", fontSize = 42.sp, color = Color.White,
+                modifier = Modifier
+                    .background(Color.Blue)
+                    .padding(10.dp)
+                    .fillMaxWidth())
+        }
+        item { Text("Title for items", fontSize = 42.sp)}
+        items(itemList) {
+            MyCustomItem(it)
+        }
+    }
+}
+
+@Composable
+fun MyCustomItem(title: String) {
+    val context = LocalContext.current
+    Row(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .clickable { //if implement detectTapGesture cannot use this
+                Toast.makeText(
+                    context,
+                    "You click $title",
+                    Toast.LENGTH_SHORT).show()
+            },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = title,
+            fontSize = 42.sp,
+            modifier = Modifier
+                .background(Color.Green)
+                .padding(10.dp)
+                .fillMaxWidth()
+                .pointerInput(Unit) {
+                    detectTapGestures (
+                        onLongPress = {
+                            Toast.makeText(
+                                context,
+                                "You long press $title",
+                                Toast.LENGTH_SHORT).show()
+                        },
+
+                        onTap = {
+                            Toast.makeText(
+                                context,
+                                "You tap $title",
+                                Toast.LENGTH_SHORT).show()
+                        }
+
+                    )
+                }
+        )
+    }
+}
+
+//Lazy Row
+@Composable
+fun MyLazyRow() {
+    val itemList = listOf<String>(
+        "Master Coding App", "Master Flutter App", "Navigation App"
+        , "Master Android App", "Master iOS App")
+
+    LazyRow(
+        contentPadding = PaddingValues(top = 120.dp)
+    ) {
+        items(items = itemList) {
+            MyCustomItem(it)
+        }
+    }
+}
+
+//Card Composable
+@Composable
+fun MyCard() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        elevation = CardDefaults.cardElevation(8.dp),
+        shape = RoundedCornerShape(30.dp),
+    ) {
+        Text("This is a simple card", modifier = Modifier.padding(16.dp))
     }
 }
 
