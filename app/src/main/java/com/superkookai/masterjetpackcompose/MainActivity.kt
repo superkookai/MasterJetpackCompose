@@ -364,9 +364,11 @@ fun MyCard() {
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .background(Color.Blue)
             .padding(16.dp),
         elevation = CardDefaults.cardElevation(8.dp),
         shape = RoundedCornerShape(30.dp),
+        colors = CardDefaults.cardColors(Color.Yellow)
     ) {
         Text("This is a simple card", modifier = Modifier.padding(16.dp))
     }
